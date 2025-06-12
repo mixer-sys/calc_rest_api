@@ -1,9 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
 type SumRequest struct {
@@ -14,18 +15,12 @@ type SumResponse struct {
 	Sum float64 `json:"sum"`
 }
 
-func sum(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
-	}
+func sum(c echo.Context) error {
 	var data SumRequest
-	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
-		return
-	}
+	if err := c.Bind(&data); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid input"})
 
-	defer r.Body.Close()
+	}
 
 	sum := 0.0
 	for _, number := range data.Numbers {
@@ -33,13 +28,13 @@ func sum(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := SumResponse{Sum: sum}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	return c.JSON(http.StatusOK, response)
 }
 
 func main() {
-	http.HandleFunc("/sum", sum)
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		fmt.Println("Error starting server:", err)
-	}
+	e := echo.New()
+
+	e.POST("/sum", sum)
+	e.Logger.Fatal(e.Start(":8080"))
+	fmt.Println("Server started on :8080")
 }
