@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/labstack/echo/v4"
 )
@@ -15,6 +16,30 @@ type SumResponse struct {
 	Sum float64 `json:"sum"`
 }
 
+type SafeMap struct {
+	mu   sync.Mutex
+	data map[string]float64
+}
+
+func NewSafeMap() *SafeMap {
+	return &SafeMap{
+		data: make(map[string]float64),
+	}
+}
+
+func (s *SafeMap) Set(key string, value float64) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.data[key] = value
+}
+
+func (s *SafeMap) Get(key string) (float64, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	value, ok := s.data[key]
+	return value, ok
+}
+
 func sum(c echo.Context) error {
 	var data SumRequest
 	if err := c.Bind(&data); err != nil {
@@ -23,10 +48,18 @@ func sum(c echo.Context) error {
 	}
 
 	sum := 0.0
+	str := ""
 	for _, number := range data.Numbers {
 		sum += number
+		str += fmt.Sprintf("%f, ", number)
 	}
 
+	SafeMap := NewSafeMap()
+	SafeMap.Set(str, sum)
+
+	if value, ok := SafeMap.Get(str); ok {
+		fmt.Printf("Retrieved from SafeMap: %s = %f\n", str, value)
+	}
 	response := SumResponse{Sum: sum}
 	return c.JSON(http.StatusOK, response)
 }
