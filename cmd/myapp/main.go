@@ -10,14 +10,17 @@ import (
 
 type DataRequest struct {
 	Numbers []float64 `json:"numbers"`
+	UUID    string    `json:"uuid"`
 }
 
 type SumResponse struct {
-	Sum float64 `json:"sum"`
+	Sum  float64 `json:"sum"`
+	UUID string  `json:"uuid"`
 }
 
 type MultiplyResponse struct {
 	Multiply float64 `json:"sum"`
+	UUID     string  `json:"uuid"`
 }
 
 type SafeMap struct {
@@ -52,19 +55,18 @@ func sum(c echo.Context) error {
 	}
 
 	sum := 0.0
-	str := ""
+
 	for _, number := range data.Numbers {
 		sum += number
-		str += fmt.Sprintf("%f, ", number)
 	}
 
 	SafeMap := NewSafeMap()
-	SafeMap.Set(str, sum)
+	SafeMap.Set(data.UUID, sum)
 
-	if value, ok := SafeMap.Get(str); ok {
-		fmt.Printf("Retrieved from SafeMap: %s = %f\n", str, value)
+	if value, ok := SafeMap.Get(data.UUID); ok {
+		fmt.Printf("Retrieved from SafeMap: %s = %f\n", data.UUID, value)
 	}
-	response := SumResponse{Sum: sum}
+	response := SumResponse{Sum: sum, UUID: data.UUID}
 	return c.JSON(http.StatusOK, response)
 }
 
@@ -75,18 +77,18 @@ func multiply(c echo.Context) error {
 	}
 
 	multiply := 1.0
-	str := ""
+
 	for _, number := range data.Numbers {
 		multiply *= number
-		str += fmt.Sprintf("%f, ", number)
+
 	}
 	SafeMap := NewSafeMap()
-	SafeMap.Set(str, multiply)
+	SafeMap.Set(data.UUID, multiply)
 
-	if value, ok := SafeMap.Get(str); ok {
-		fmt.Printf("Retrieved from SafeMap: %s = %f\n", str, value)
+	if value, ok := SafeMap.Get(data.UUID); ok {
+		fmt.Printf("Retrieved from SafeMap: %s = %f\n", data.UUID, value)
 	}
-	response := MultiplyResponse{Multiply: multiply}
+	response := MultiplyResponse{Multiply: multiply, UUID: data.UUID}
 	return c.JSON(http.StatusOK, response)
 }
 
