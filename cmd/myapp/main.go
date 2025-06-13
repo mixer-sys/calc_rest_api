@@ -95,8 +95,8 @@ func multiply(c echo.Context) error {
 func main() {
 	e := echo.New()
 
-	e.POST("/sum", sum)
-	e.POST("/multiply", multiply)
+	e.POST("/api/v1/sum", sum)
+	e.POST("/api/v1/multiply", multiply)
 	e.Logger.Fatal(e.Start(":8080"))
 	fmt.Println("Server started on :8080")
 }
