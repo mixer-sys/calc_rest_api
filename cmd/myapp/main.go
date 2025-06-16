@@ -6,6 +6,9 @@ import (
 	"sync"
 
 	"github.com/labstack/echo/v4"
+	echoSwagger "github.com/swaggo/echo-swagger"
+
+	_ "calc_rest_api/api/docs"
 )
 
 type DataRequest struct {
@@ -93,8 +96,10 @@ func multiply(c echo.Context) error {
 }
 
 func main() {
+
 	e := echo.New()
 
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.POST("/api/v1/sum", sum)
 	e.POST("/api/v1/multiply", multiply)
 	e.Logger.Fatal(e.Start(":8080"))
