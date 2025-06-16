@@ -1,3 +1,8 @@
+// @title		   Calculator REST API
+// @version	   1.0
+// @description   A simple REST API for performing basic arithmetic operations
+// @host		   localhost:8080
+// @BasePath	   /api/v1
 package main
 
 import (
@@ -12,18 +17,18 @@ import (
 )
 
 type DataRequest struct {
-	Numbers []float64 `json:"numbers"`
-	UUID    string    `json:"uuid"`
+	Numbers []float64 `json:"numbers" example:"1.5,2.0,3.0"`
+	UUID    string    `json:"uuid" example:"123e4567-e89b-12d3-a456-426614174000"`
 }
 
 type SumResponse struct {
-	Sum  float64 `json:"sum"`
-	UUID string  `json:"uuid"`
+	Sum  float64 `json:"sum" example:"6.3"`
+	UUID string  `json:"uuid" example:"123e4567-e89b-12d3-a456-426614174000"`
 }
 
 type MultiplyResponse struct {
-	Multiply float64 `json:"sum"`
-	UUID     string  `json:"uuid"`
+	Multiply float64 `json:"multiply" example:"6.1"`
+	UUID     string  `json:"uuid" example:"123e4567-e89b-12d3-a456-426614174000"`
 }
 
 type SafeMap struct {
@@ -37,19 +42,28 @@ func NewSafeMap() *SafeMap {
 	}
 }
 
-func (s *SafeMap) Set(key string, value float64) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.data[key] = value
+func (safeMap *SafeMap) Set(key string, value float64) {
+	safeMap.mu.Lock()
+	defer safeMap.mu.Unlock()
+	safeMap.data[key] = value
 }
 
-func (s *SafeMap) Get(key string) (float64, bool) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	value, ok := s.data[key]
+func (safeMap *SafeMap) Get(key string) (float64, bool) {
+	safeMap.mu.Lock()
+	defer safeMap.mu.Unlock()
+	value, ok := safeMap.data[key]
 	return value, ok
 }
 
+// @Summary Sum of numbers
+// @Description Calculate the sum of a list of numbers
+// @Tags Calculator
+// @Accept json
+// @Produce json
+// @Param data body DataRequest true "Data Request"
+// @Success 200 {object} SumResponse
+// @Failure 400 {object} map[string]string
+// @Router /sum [post]
 func sum(c echo.Context) error {
 	var data DataRequest
 	if err := c.Bind(&data); err != nil {
@@ -73,6 +87,15 @@ func sum(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
+// @Summary Multiply of numbers
+// @Description Calculate the multiply of numbers
+// @Tags Calculator
+// @Accept json
+// @Produce json
+// @Param data body DataRequest true "Data Request"
+// @Success 200 {object} MultiplyResponse
+// @Failure 400 {object} map[string]string
+// @Router /multiply [post]
 func multiply(c echo.Context) error {
 	var data DataRequest
 	if err := c.Bind(&data); err != nil {

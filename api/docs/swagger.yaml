@@ -1,4 +1,98 @@
+basePath: /api/v1
+definitions:
+  main.DataRequest:
+    properties:
+      numbers:
+        example:
+        - 1.5
+        - 2
+        - 3
+        items:
+          type: number
+        type: array
+      uuid:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+    type: object
+  main.MultiplyResponse:
+    properties:
+      multiply:
+        example: 6.1
+        type: number
+      uuid:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+    type: object
+  main.SumResponse:
+    properties:
+      sum:
+        example: 6.3
+        type: number
+      uuid:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+    type: object
+host: localhost:8080
 info:
   contact: {}
-paths: {}
+  description: A simple REST API for performing basic arithmetic operations
+  title: Calculator REST API
+  version: "1.0"
+paths:
+  /multiply:
+    post:
+      consumes:
+      - application/json
+      description: Calculate the multiply of numbers
+      parameters:
+      - description: Data Request
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/main.DataRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.MultiplyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Multiply of numbers
+      tags:
+      - Calculator
+  /sum:
+    post:
+      consumes:
+      - application/json
+      description: Calculate the sum of a list of numbers
+      parameters:
+      - description: Data Request
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/main.DataRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.SumResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Sum of numbers
+      tags:
+      - Calculator
 swagger: "2.0"
