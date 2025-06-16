@@ -21,6 +21,10 @@ type DataRequest struct {
 	UUID    string    `json:"uuid" example:"123e4567-e89b-12d3-a456-426614174000"`
 }
 
+type BadRequest struct {
+	Error string `json:"error" example:"Bad request"`
+}
+
 type SumResponse struct {
 	Sum  float64 `json:"sum" example:"6.3"`
 	UUID string  `json:"uuid" example:"123e4567-e89b-12d3-a456-426614174000"`
@@ -62,12 +66,12 @@ func (safeMap *SafeMap) Get(key string) (float64, bool) {
 // @Produce json
 // @Param data body DataRequest true "Data Request"
 // @Success 200 {object} SumResponse
-// @Failure 400 {object} map[string]string
+// @Failure 400 {object} BadRequest
 // @Router /sum [post]
 func sum(c echo.Context) error {
 	var data DataRequest
 	if err := c.Bind(&data); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid input"})
+		return c.JSON(http.StatusBadRequest, BadRequest{Error: "Invalid input"})
 
 	}
 
@@ -94,12 +98,12 @@ func sum(c echo.Context) error {
 // @Produce json
 // @Param data body DataRequest true "Data Request"
 // @Success 200 {object} MultiplyResponse
-// @Failure 400 {object} map[string]string
+// @Failure 400 {object} BadRequest
 // @Router /multiply [post]
 func multiply(c echo.Context) error {
 	var data DataRequest
 	if err := c.Bind(&data); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid input"})
+		return c.JSON(http.StatusBadRequest, BadRequest{Error: "Invalid input"})
 	}
 
 	multiply := 1.0

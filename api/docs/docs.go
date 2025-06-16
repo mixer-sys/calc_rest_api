@@ -49,10 +49,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/main.BadRequest"
                         }
                     }
                 }
@@ -92,10 +89,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/main.BadRequest"
                         }
                     }
                 }
@@ -103,6 +97,15 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "main.BadRequest": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "Bad request"
+                }
+            }
+        },
         "main.DataRequest": {
             "type": "object",
             "properties": {

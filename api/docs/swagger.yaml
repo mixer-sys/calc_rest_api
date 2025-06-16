@@ -1,5 +1,11 @@
 basePath: /api/v1
 definitions:
+  main.BadRequest:
+    properties:
+      error:
+        example: Bad request
+        type: string
+    type: object
   main.DataRequest:
     properties:
       numbers:
@@ -61,9 +67,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/main.BadRequest'
       summary: Multiply of numbers
       tags:
       - Calculator
@@ -89,9 +93,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/main.BadRequest'
       summary: Sum of numbers
       tags:
       - Calculator
