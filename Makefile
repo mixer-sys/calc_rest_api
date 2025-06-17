@@ -1,6 +1,6 @@
 SWAG = swag
-SWAG_DIR = ./api/docs
-GENERALINFO = ./cmd/myapp/main.go
+SWAG_DIR = ./api/openapi-spec/v1
+GENERALINFO = ./cmd/app/main.go
 
 .PHONY: all clean swag
 
