@@ -2,10 +2,10 @@ package commonHandler
 
 import (
 	core "calc_rest_api/internal/app/core"
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 )
 
 type DataRequest struct {
@@ -53,7 +53,7 @@ func Sum(c echo.Context) error {
 	SafeMap.Set(data.UUID, sum)
 
 	if value, ok := SafeMap.Get(data.UUID); ok {
-		fmt.Printf("Retrieved from SafeMap: %s = %f\n", data.UUID, value)
+		logrus.Fatalf("Retrieved from SafeMap: %s = %f\n", data.UUID, value)
 	}
 	response := SumResponse{Sum: sum, UUID: data.UUID}
 	return c.JSON(http.StatusOK, response)
@@ -84,7 +84,7 @@ func Multiply(c echo.Context) error {
 	SafeMap.Set(data.UUID, multiply)
 
 	if value, ok := SafeMap.Get(data.UUID); ok {
-		fmt.Printf("Retrieved from SafeMap: %s = %f\n", data.UUID, value)
+		logrus.Fatalf("Retrieved from SafeMap: %s = %f\n", data.UUID, value)
 	}
 	response := MultiplyResponse{Multiply: multiply, UUID: data.UUID}
 	return c.JSON(http.StatusOK, response)
