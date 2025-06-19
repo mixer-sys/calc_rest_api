@@ -6,9 +6,12 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	_ "calc_rest_api/api/openapi-spec/v1"
 
@@ -49,4 +52,13 @@ func main() {
 	<-ch
 	logrus.Info("Shutting down server...")
 
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	fmt.Printf("checking for graceful shutdown...\n")
+
+	if err := e.Shutdown(shutdownCtx); err != nil {
+		logrus.Infof("Server Shutdown Failed:%+v", err)
+	}
+
+	logrus.Info("Server exited gracefully")
 }
