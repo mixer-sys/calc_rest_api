@@ -1,9 +1,9 @@
 package commonHandler
 
 import (
+	core "calc_rest_api/internal/app/core"
 	"fmt"
 	"net/http"
-	"sync"
 
 	"github.com/labstack/echo/v4"
 )
@@ -25,30 +25,6 @@ type SumResponse struct {
 type MultiplyResponse struct {
 	Multiply float64 `json:"multiply" example:"6.1"`
 	UUID     string  `json:"uuid" example:"123e4567-e89b-12d3-a456-426614174000"`
-}
-
-type SafeMap struct {
-	mu   sync.Mutex
-	data map[string]float64
-}
-
-func NewSafeMap() *SafeMap {
-	return &SafeMap{
-		data: make(map[string]float64),
-	}
-}
-
-func (safeMap *SafeMap) Set(key string, value float64) {
-	safeMap.mu.Lock()
-	defer safeMap.mu.Unlock()
-	safeMap.data[key] = value
-}
-
-func (safeMap *SafeMap) Get(key string) (float64, bool) {
-	safeMap.mu.Lock()
-	defer safeMap.mu.Unlock()
-	value, ok := safeMap.data[key]
-	return value, ok
 }
 
 // @Summary Sum of numbers
@@ -73,7 +49,7 @@ func Sum(c echo.Context) error {
 		sum += number
 	}
 
-	SafeMap := NewSafeMap()
+	SafeMap := core.NewSafeMap()
 	SafeMap.Set(data.UUID, sum)
 
 	if value, ok := SafeMap.Get(data.UUID); ok {
@@ -104,7 +80,7 @@ func Multiply(c echo.Context) error {
 		multiply *= number
 
 	}
-	SafeMap := NewSafeMap()
+	SafeMap := core.NewSafeMap()
 	SafeMap.Set(data.UUID, multiply)
 
 	if value, ok := SafeMap.Get(data.UUID); ok {
