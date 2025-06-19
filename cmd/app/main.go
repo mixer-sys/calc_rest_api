@@ -6,11 +6,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 
 	_ "calc_rest_api/api/openapi-spec/v1"
 
-	commonHandler "calc_rest_api/internal/app/handlers"
+	handlers "calc_rest_api/internal/app/handlers"
 
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
@@ -21,13 +25,13 @@ func main() {
 	e := echo.New()
 
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
-	e.POST("/api/v1/sum", commonHandler.Sum)
-	e.POST("/api/v1/multiply", commonHandler.Multiply)
-	
+	e.POST("/api/v1/sum", handlers.Sum)
+	e.POST("/api/v1/multiply", handlers.Multiply)
+
 	go func() {
 		e.Logger.Fatal(e.Start(":8080"))
 		fmt.Println("Server started on :8080")
-	}
+	}()
 
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, os.Interrupt, syscall.SIGTERM)

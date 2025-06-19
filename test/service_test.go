@@ -2,7 +2,7 @@ package service_test
 
 import (
 	"bytes"
-	commonHandler "calc_rest_api/pkg/handlers"
+	handlers "calc_rest_api/internal/app/handlers"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -18,7 +18,7 @@ func TestSum(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	if assert.NoError(t, commonHandler.Sum(c)) {
+	if assert.NoError(t, handlers.Sum(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.JSONEq(t, `{"sum":6.5,"uuid":"123e4567-e89b-12d3-a456-426614174000"}`, rec.Body.String())
 	}
@@ -30,7 +30,7 @@ func TestMultiply(t *testing.T) {
 	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	if assert.NoError(t, commonHandler.Multiply(c)) {
+	if assert.NoError(t, handlers.Multiply(c)) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.JSONEq(t, `{"multiply":9.0,"uuid":"123e4567-e89b-12d3-a456-426614174000"}`, rec.Body.String())
 	}
