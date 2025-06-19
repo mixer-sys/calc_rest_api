@@ -15,18 +15,17 @@ import (
 
 	_ "calc_rest_api/api/openapi-spec/v1"
 
+	config "calc_rest_api/internal/app/config"
 	handlers "calc_rest_api/internal/app/handlers"
 
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 func main() {
 	LOGFILE := "app.log"
-	CONFIGFILE := "config"
-	CONFIGTYPE := "yaml"
+	CONFIGFILE := "config.yaml"
 
 	logFile, err := os.OpenFile(LOGFILE, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
@@ -39,16 +38,10 @@ func main() {
 		FullTimestamp: true,
 	})
 
-	viper.SetConfigName(CONFIGFILE)
-	viper.SetConfigType(CONFIGTYPE)
-	viper.AddConfigPath(".")
-
-	if err := viper.ReadInConfig(); err != nil {
-		logrus.Fatalf("Error reading config file: %s", err)
+	config, err := config.LoadConfig(CONFIGFILE)
+	if err != nil {
+		logrus.Fatal("Error opening config file:", err)
 	}
-
-	port := viper.GetString("server.port")
-	host := viper.GetString("server.host")
 
 	e := echo.New()
 
@@ -56,7 +49,7 @@ func main() {
 	e.POST("/api/v1/sum", handlers.Sum)
 	e.POST("/api/v1/multiply", handlers.Multiply)
 
-	address := fmt.Sprintf("%s:%s", host, port)
+	address := fmt.Sprintf("%s:%s", config.Server.Host, config.Server.Port)
 	if err := e.Start(address); err != nil {
 		logrus.Fatal("Error starting server:", err)
 	}
