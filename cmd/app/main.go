@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	_ "calc_rest_api/api/openapi-spec/v1"
 
@@ -29,7 +30,9 @@ func main() {
 	e.POST("/api/v1/multiply", handlers.Multiply)
 
 	go func() {
-		e.Logger.Fatal(e.Start(":8080"))
+		if err := e.Start(":8080"); err != nil {
+			e.Logger.Fatal("Error starting server:", err)
+		}
 		fmt.Println("Server started on :8080")
 	}()
 
@@ -38,9 +41,13 @@ func main() {
 	<-ch
 	fmt.Println("Shutting down server...")
 
-	if err := e.Shutdown(context.Background()); err != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Корректное завершение работы сервера
+	if err := e.Shutdown(ctx); err != nil {
 		e.Logger.Fatal("Error shutting down server:", err)
-	} else {
-		fmt.Println("Server gracefully stopped")
 	}
+
+	fmt.Println("Server gracefully stopped")
 }
