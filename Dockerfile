@@ -5,6 +5,8 @@ RUN go mod download
 COPY . .
 RUN go build -o /calc_rest_api ./cmd/app/
 FROM alpine:latest
+ENV CONFIGFILE=config1.yaml
+ENV LOGFILE=app.log
 WORKDIR /
 COPY --from=builder /calc_rest_api .
 COPY --from=builder /app/config.yaml .

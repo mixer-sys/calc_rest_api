@@ -2,9 +2,14 @@
 Калькулятор с REST API
 
 # Запуск в контейнере
-```
+Создай .env файл. См. env.example.
+
+Создай config.yaml.
+
+Выполни команды
+```bash
 docker build -t app .
-docker run  -p 8080:8080 app
+docker run  -p 8080:8080 --env-file .env app
 ```
 # Документация
 ```

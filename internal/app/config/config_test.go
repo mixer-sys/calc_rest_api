@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestLoadConfig_ValidFile(t *testing.T) {
@@ -36,5 +37,5 @@ server:
 func TestLoadConfig_InvalidFile(t *testing.T) {
 
 	_, err := LoadConfig("invalidfile.yaml")
-	assert.Error(t, err)
+	require.Error(t, err)
 }

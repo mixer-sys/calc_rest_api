@@ -18,27 +18,40 @@ import (
 	config "calc_rest_api/internal/app/config"
 	handlers "calc_rest_api/internal/app/handlers"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/sirupsen/logrus"
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 func main() {
-	LOGFILE := "app.log"
-	CONFIGFILE := "config.yaml"
+	err := godotenv.Load()
+	if err != nil {
+		logrus.Debug("Error loading .env file")
+	}
 
-	logFile, err := os.OpenFile(LOGFILE, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	configFile := os.Getenv("CONFIGFILE")
+	if configFile == "" {
+		configFile = "config.yaml"
+	}
+
+	logFile := os.Getenv("LOGFILE")
+	if logFile == "" {
+		logFile = "app.log"
+	}
+
+	log, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		logrus.Fatal("Error opening log file:", err)
 	}
-	defer logFile.Close()
+	defer log.Close()
 
-	logrus.SetOutput(logFile)
+	logrus.SetOutput(log)
 	logrus.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp: true,
 	})
 
-	config, err := config.LoadConfig(CONFIGFILE)
+	config, err := config.LoadConfig(configFile)
 	if err != nil {
 		logrus.Fatal("Error opening config file:", err)
 	}
