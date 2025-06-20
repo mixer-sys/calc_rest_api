@@ -5,7 +5,8 @@ RUN go mod download
 COPY . .
 RUN go build -o /calc_rest_api ./cmd/app/
 FROM alpine:latest
-WORKDIR /root/
+WORKDIR /
 COPY --from=builder /calc_rest_api .
+COPY --from=builder /app/config.yaml .
 EXPOSE 8080
-CMD [".//calc_rest_api"]
+CMD ["./calc_rest_api"]
