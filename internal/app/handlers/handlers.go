@@ -2,10 +2,10 @@ package commonHandler
 
 import (
 	core "calc_rest_api/internal/app/core"
+	logger "calc_rest_api/internal/app/logger"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/sirupsen/logrus"
 )
 
 type DataRequest struct {
@@ -37,6 +37,8 @@ type MultiplyResponse struct {
 // @Failure 400 {object} BadRequest
 // @Router /sum [post]
 func Sum(c echo.Context) error {
+
+	logger := logger.GetLogger("info")
 	var data DataRequest
 	if err := c.Bind(&data); err != nil {
 		return c.JSON(http.StatusBadRequest, BadRequest{Error: "Invalid input"})
@@ -53,7 +55,7 @@ func Sum(c echo.Context) error {
 	SafeMap.Set(data.UUID, sum)
 
 	if value, ok := SafeMap.Get(data.UUID); ok {
-		logrus.Infof("Retrieved from SafeMap: %s = %f\n", data.UUID, value)
+		logger.Info("Retrieved from SafeMap: %s = %f\n", data.UUID, value)
 	}
 	response := SumResponse{Sum: sum, UUID: data.UUID}
 	return c.JSON(http.StatusOK, response)
@@ -69,6 +71,7 @@ func Sum(c echo.Context) error {
 // @Failure 400 {object} BadRequest
 // @Router /multiply [post]
 func Multiply(c echo.Context) error {
+	logger := logger.GetLogger("info")
 	var data DataRequest
 	if err := c.Bind(&data); err != nil {
 		return c.JSON(http.StatusBadRequest, BadRequest{Error: "Invalid input"})
@@ -84,7 +87,7 @@ func Multiply(c echo.Context) error {
 	SafeMap.Set(data.UUID, multiply)
 
 	if value, ok := SafeMap.Get(data.UUID); ok {
-		logrus.Infof("Retrieved from SafeMap: %s = %f\n", data.UUID, value)
+		logger.Info("Retrieved from SafeMap: %s = %f\n", data.UUID, value)
 	}
 	response := MultiplyResponse{Multiply: multiply, UUID: data.UUID}
 	return c.JSON(http.StatusOK, response)

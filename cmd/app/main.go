@@ -17,6 +17,7 @@ import (
 
 	config "calc_rest_api/internal/app/config"
 	handlers "calc_rest_api/internal/app/handlers"
+	"calc_rest_api/internal/app/logger"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -27,34 +28,20 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		logrus.Debug("Error loading .env file")
+		fmt.Println("Error loading .env file")
 	}
 
 	configFile := os.Getenv("CONFIGFILE")
 	if configFile == "" {
 		configFile = "config.yaml"
 	}
-
-	logFile := os.Getenv("LOGFILE")
-	if logFile == "" {
-		logFile = "app.log"
-	}
-
-	log, err := os.OpenFile(logFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		logrus.Fatal("Error opening log file:", err)
-	}
-	defer log.Close()
-
-	logrus.SetOutput(log)
-	logrus.SetFormatter(&logrus.TextFormatter{
-		FullTimestamp: true,
-	})
-
 	config, err := config.LoadConfig(configFile)
 	if err != nil {
 		logrus.Fatal("Error opening config file:", err)
 	}
+	logLevel := os.Getenv("LOGLEVEL")
+
+	logger := logger.GetLogger(logLevel)
 
 	e := echo.New()
 
@@ -64,22 +51,22 @@ func main() {
 
 	address := fmt.Sprintf("%s:%s", config.Server.Host, config.Server.Port)
 	if err := e.Start(address); err != nil {
-		logrus.Fatal("Error starting server:", err)
+		logger.Fatal("Error starting server: %+v", err)
 	}
-	logrus.Info("Server started on : ", address)
+	logger.Info("Server started on %s: ", address)
 
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
 	<-ch
-	logrus.Info("Shutting down server...")
+	logger.Info("Shutting down server...")
 
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	fmt.Printf("checking for graceful shutdown...\n")
+	logger.Info("checking for graceful shutdown...\n")
 
 	if err := e.Shutdown(shutdownCtx); err != nil {
-		logrus.Errorf("Server Shutdown Failed:%+v", err)
+		logger.Error("Server Shutdown Failed:%+v", err)
 	}
 
-	logrus.Info("Server exited gracefully")
+	logger.Info("Server exited gracefully")
 }
