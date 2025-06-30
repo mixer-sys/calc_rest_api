@@ -10,5 +10,6 @@ ENV LOGFILE=app.log
 WORKDIR /
 COPY --from=builder /calc_rest_api .
 COPY --from=builder /app/config.yaml .
+COPY --from=builder /app/.env .
 EXPOSE 8080
 CMD ["./calc_rest_api"]
