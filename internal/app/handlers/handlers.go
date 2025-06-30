@@ -38,7 +38,7 @@ type MultiplyResponse struct {
 // @Router /sum [post]
 func Sum(c echo.Context) error {
 
-	logger := logger.GetLogger("info")
+	logger := logger.GetLogger()
 	var data DataRequest
 	if err := c.Bind(&data); err != nil {
 		return c.JSON(http.StatusBadRequest, BadRequest{Error: "Invalid input"})
@@ -71,7 +71,7 @@ func Sum(c echo.Context) error {
 // @Failure 400 {object} BadRequest
 // @Router /multiply [post]
 func Multiply(c echo.Context) error {
-	logger := logger.GetLogger("info")
+	logger := logger.GetLogger()
 	var data DataRequest
 	if err := c.Bind(&data); err != nil {
 		return c.JSON(http.StatusBadRequest, BadRequest{Error: "Invalid input"})

@@ -29,9 +29,10 @@ func main() {
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("Error loading .env file")
+		os.Exit(1)
 	}
 
-	configFile := os.Getenv("CONFIGFILE")
+	configFile := os.Getenv("CONFIG_FILE")
 	if configFile == "" {
 		configFile = "config.yaml"
 	}
@@ -39,9 +40,8 @@ func main() {
 	if err != nil {
 		logrus.Fatal("Error opening config file:", err)
 	}
-	logLevel := os.Getenv("LOGLEVEL")
 
-	logger := logger.GetLogger(logLevel)
+	logger := logger.GetLogger()
 
 	e := echo.New()
 

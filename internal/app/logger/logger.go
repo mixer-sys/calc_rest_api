@@ -1,8 +1,10 @@
 package logger
 
 import (
+	"fmt"
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 )
 
@@ -10,7 +12,22 @@ type LoggerWrapper struct {
 	logger *logrus.Logger
 }
 
-func GetLogger(logLevel string) *LoggerWrapper {
+func GetLogLevel() string {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file")
+		os.Exit(1)
+	}
+
+	logLevel := os.Getenv("LOGLEVEL")
+	if logLevel == "" {
+		logLevel = "info"
+	}
+	return logLevel
+}
+
+func GetLogger() *LoggerWrapper {
+	logLevel := GetLogLevel()
 	logger := logrus.New()
 
 	logger.SetOutput(os.Stdout)
